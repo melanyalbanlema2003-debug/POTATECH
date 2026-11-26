@@ -326,7 +326,7 @@ with col_logo:
         st.info(f"Guarda tu logo como `{LOGO_FILE}` en la carpeta del proyecto para mostrarlo aquí.")
 
 with col_video:
-    st.caption("**Video demostrativo POTATOTECH**")
+    st.caption("**Video demostrativo POTATECH**")
     video_path = Path(VIDEO_FILE)
     if video_path.exists():
         st.video(str(video_path))
