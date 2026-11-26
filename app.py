@@ -6,7 +6,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 
 st.set_page_config(
-    page_title="POTATECH - Cortadora y Peladora de Papas",
+    page_title="POTATECH - Peladora y Picadora de Papas",
     page_icon="⚙️",
     layout="wide",
 )
