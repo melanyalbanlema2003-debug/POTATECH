@@ -253,31 +253,36 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- INDICADORES PORCENTUALES / MÉTRICAS EN VERTICAL ---
+# --- 4 MÉTRICAS EN DISPOSICIÓN 2 Y 2 EN VERTICAL ---
 u_series = est_df["utilidad_num"].dropna()
 disp_pct = est_df["est_p7_disposicion_uso"].isin(
     ["Definitivamente la utilizaría", "Probablemente la utilizaría"]
 ).mean() * 100
 pct_negocios = (meta["n_negocios"] / max(meta["total"], 1)) * 100
-pct_precio_viable = est_df["est_p12_precio_max"].isin(
-    ["Menos de USD 200", "USD 200–399"]
-).mean() * 100
 
-st.metric(
-    "Participación del segmento negocios",
-    f"{pct_negocios:.1f}%",
-    f"{meta['n_negocios']} de {meta['total']} respuestas totales",
-)
-st.metric(
-    "Disposición favorable de uso",
-    f"{disp_pct:.1f}%",
-    f"Utilidad media: {u_series.mean():.2f} / 5.00 (Mediana: {u_series.median():.1f})",
-)
-st.metric(
-    "Negocios con valor objetivo viable (≤ USD 399)",
-    f"{pct_precio_viable:.1f}%",
-    "En precio máximo aceptable (P12)",
-)
+with st.container():
+    st.metric(
+        "Negocios encuestados",
+        f"{meta['n_negocios']} ({pct_negocios:.1f}%)",
+        f"De {meta['total']} respuestas totales",
+    )
+    st.metric(
+        "Utilidad media (1–5)",
+        f"{u_series.mean():.2f}",
+        f"Mediana: {u_series.median():.1f}",
+    )
+
+with st.container():
+    st.metric(
+        "Disposición favorable",
+        f"{disp_pct:.1f}%",
+        "Definitivamente / Probablemente",
+    )
+    st.metric(
+        "Rango precio viable",
+        "≤ USD 399",
+        "13/16 negocios (81.3%)",
+    )
 
 st.markdown("---")
 
