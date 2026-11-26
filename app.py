@@ -1,3 +1,4 @@
+from pathlib import Path
 import re
 import numpy as np
 import pandas as pd
@@ -11,6 +12,7 @@ st.set_page_config(
 )
 
 DEFAULT_FILE = "Optimización en el Procesamiento de Papa (respuestas).xlsx"
+VIDEO_FILE = "papasvideo.mp4"
 EST_PROFILE_LABEL = "Trabajo o soy propietario/a de un negocio de alimentos (En el pasado o presente)"
 
 BAR_PALETTE = [
@@ -253,40 +255,44 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 4 MÉTRICAS EN DISPOSICIÓN 2 Y 2 ---
+# --- 4 MÉTRICAS EN VERTICAL (IZQUIERDA) + VIDEO (DERECHA) ---
 u_series = est_df["utilidad_num"].dropna()
 disp_pct = est_df["est_p7_disposicion_uso"].isin(
     ["Definitivamente la utilizaría", "Probablemente la utilizaría"]
 ).mean() * 100
 pct_negocios = (meta["n_negocios"] / max(meta["total"], 1)) * 100
 
-fila1_col1, fila1_col2 = st.columns(2)
-with fila1_col1:
+col_metrics, col_video = st.columns([1, 1.35], gap="large")
+
+with col_metrics:
     st.metric(
         "Negocios encuestados",
         f"{meta['n_negocios']} ({pct_negocios:.1f}%)",
         f"De {meta['total']} respuestas totales",
     )
-with fila1_col2:
     st.metric(
         "Utilidad media (1–5)",
         f"{u_series.mean():.2f}",
         f"Mediana: {u_series.median():.1f}",
     )
-
-fila2_col1, fila2_col2 = st.columns(2)
-with fila2_col1:
     st.metric(
         "Disposición favorable",
         f"{disp_pct:.1f}%",
         "Definitivamente / Probablemente",
     )
-with fila2_col2:
     st.metric(
         "Rango precio viable",
         "≤ USD 399",
         "13/16 negocios (81.3%)",
     )
+
+with col_video:
+    st.subheader("Video demostrativo POTATECH")
+    video_path = Path(VIDEO_FILE)
+    if video_path.exists():
+        st.video(str(video_path))
+    else:
+        st.info(f"Coloca el archivo `{VIDEO_FILE}` en la misma carpeta que `app.py` para reproducirlo aquí.")
 
 st.markdown("---")
 
