@@ -256,7 +256,7 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- ESTILOS COMPACTOS PARA EVITAR HUECOS VACÍOS ---
+# --- ESTILOS COMPACTOS Y CENTRADOS PARA MÉTRICAS ---
 st.markdown(
     """
     <style>
@@ -265,6 +265,14 @@ st.markdown(
             margin-bottom: 0.35rem;
             border-radius: 8px;
             background-color: rgba(128, 128, 128, 0.06);
+            text-align: center;
+        }
+        div[data-testid="stMetric"] label,
+        div[data-testid="stMetric"] div[data-testid="stMetricValue"],
+        div[data-testid="stMetric"] div[data-testid="stMetricDelta"] {
+            justify-content: center !important;
+            text-align: center !important;
+            width: 100%;
         }
         div[data-testid="stMetric"] label {
             font-size: 0.82rem;
