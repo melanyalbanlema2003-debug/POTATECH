@@ -12,6 +12,7 @@ st.set_page_config(
 )
 
 DEFAULT_FILE = "Optimización en el Procesamiento de Papa (respuestas).xlsx"
+LOGO_FILE = "logo_potatech.png"
 VIDEO_FILE = "papasvideo.mp4"
 EST_PROFILE_LABEL = "Trabajo o soy propietario/a de un negocio de alimentos (En el pasado o presente)"
 
@@ -255,14 +256,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 4 MÉTRICAS EN VERTICAL (IZQUIERDA) + VIDEO REDUCIDO (DERECHA) ---
+# --- 3 COLUMNAS: DATOS (IZQUIERDA) | LOGO (CENTRO) | VIDEO REDUCIDO (DERECHA) ---
 u_series = est_df["utilidad_num"].dropna()
 disp_pct = est_df["est_p7_disposicion_uso"].isin(
     ["Definitivamente la utilizaría", "Probablemente la utilizaría"]
 ).mean() * 100
 pct_negocios = (meta["n_negocios"] / max(meta["total"], 1)) * 100
 
-col_metrics, col_video = st.columns([1.65, 0.75], gap="medium")
+col_metrics, col_logo, col_video = st.columns([1.0, 1.15, 0.85], gap="medium")
 
 with col_metrics:
     st.metric(
@@ -286,15 +287,24 @@ with col_metrics:
         "13/16 negocios (81.3%)",
     )
 
+with col_logo:
+    logo_path = Path(LOGO_FILE)
+    if logo_path.exists():
+        st.image(str(logo_path), width="stretch")
+    else:
+        st.info(f"Guarda tu logo como `{LOGO_FILE}` en la carpeta del proyecto para mostrarlo aquí.")
+
 with col_video:
     st.caption("**Video demostrativo POTATECH**")
     video_path = Path(VIDEO_FILE)
     if video_path.exists():
-        _, v_subcol, _ = st.columns([0.05, 0.65, 0.3])
+        _, v_subcol, _ = st.columns([0.05, 0.7, 0.25])
         with v_subcol:
             st.video(str(video_path))
     else:
         st.info(f"Coloca `{VIDEO_FILE}` en la carpeta del proyecto.")
+
+st.markdown("---")
 
 # --- PESTAÑAS ---
 tab_est, tab_ques, tab_qfd, tab_tech = st.tabs([
