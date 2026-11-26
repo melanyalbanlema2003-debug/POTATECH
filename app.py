@@ -24,7 +24,7 @@ def clean_text(s: str) -> str:
     return re.sub(r"\s+", " ", str(s)).strip()
 
 
-def colored_bar_chart(series: pd.Series, xlabel: str = "", horizontal: bool = True, suffix: str = ""):
+def colored_bar_chart(series: pd.Series, ylabel: str = "", horizontal: bool = False, suffix: str = ""):
     """Dibuja un gráfico de barras donde cada barra tiene un color distinto y etiqueta de valor."""
     s = series.dropna()
     if s.empty:
@@ -35,16 +35,15 @@ def colored_bar_chart(series: pd.Series, xlabel: str = "", horizontal: bool = Tr
     values = s.values.astype(float)
     colors = [BAR_PALETTE[i % len(BAR_PALETTE)] for i in range(len(labels))]
 
-    fig_h = max(2.8, 0.42 * len(labels) + 1.0) if horizontal else 3.8
-    fig, ax = plt.subplots(figsize=(7.5, fig_h))
-
     if horizontal:
+        fig_h = max(3.0, 0.45 * len(labels) + 1.0)
+        fig, ax = plt.subplots(figsize=(8.0, fig_h))
         y_pos = np.arange(len(labels))
-        bars = ax.barh(y_pos, values, color=colors, edgecolor="none", height=0.65)
+        bars = ax.barh(y_pos, values, color=colors, edgecolor="none", height=0.62)
         ax.set_yticks(y_pos)
         ax.set_yticklabels(labels, fontsize=9)
         ax.invert_yaxis()
-        ax.set_xlabel(xlabel, fontsize=9)
+        ax.set_xlabel(ylabel, fontsize=9)
         max_v = max(values) if len(values) > 0 else 1.0
         ax.set_xlim(0, max_v * 1.18 if max_v > 0 else 1.0)
         for bar, val in zip(bars, values):
@@ -60,11 +59,12 @@ def colored_bar_chart(series: pd.Series, xlabel: str = "", horizontal: bool = Tr
                 color="#222222",
             )
     else:
+        fig, ax = plt.subplots(figsize=(8.5, 4.2))
         x_pos = np.arange(len(labels))
-        bars = ax.bar(x_pos, values, color=colors, width=0.58)
+        bars = ax.bar(x_pos, values, color=colors, width=0.55)
         ax.set_xticks(x_pos)
-        ax.set_xticklabels(labels, rotation=20, ha="right", fontsize=9)
-        ax.set_ylabel(xlabel, fontsize=9)
+        ax.set_xticklabels(labels, rotation=28, ha="right", fontsize=8.5)
+        ax.set_ylabel(ylabel, fontsize=9)
         max_v = max(values) if len(values) > 0 else 1.0
         ax.set_ylim(0, max_v * 1.18 if max_v > 0 else 1.0)
         for bar, val in zip(bars, values):
@@ -82,7 +82,7 @@ def colored_bar_chart(series: pd.Series, xlabel: str = "", horizontal: bool = Tr
 
     ax.spines["top"].set_visible(False)
     ax.spines["right"].set_visible(False)
-    ax.grid(axis="x" if horizontal else "y", linestyle="--", alpha=0.35)
+    ax.grid(axis="y" if not horizontal else "x", linestyle="--", alpha=0.35)
     plt.tight_layout()
     st.pyplot(fig, width="stretch")
     plt.close(fig)
@@ -227,7 +227,8 @@ def build_qfd_inputs(est_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, 
     return q_df, comos_meta, rel_init, roof_df
 
 
-st.sidebar.title("Configuración QFD")
+# --- BARRA LATERAL ---
+st.sidebar.title("Configuración POTATECH")
 uploaded = st.sidebar.file_uploader("Cargar Excel/CSV de respuestas", type=["xlsx", "xls", "csv"])
 file_source = uploaded if uploaded is not None else DEFAULT_FILE
 
@@ -237,23 +238,50 @@ except Exception as exc:
     st.error(f"No se pudo leer el archivo: {exc}")
     st.stop()
 
-st.title("⚙️ POTATECH - Cortadora y Peladora de Papas")
-st.caption(
-    f"Casa de la Calidad (QFD) | Segmento objetivo: **Negocios de alimentos (`n = {meta['n_negocios']}`)** de un total de "
-    f"**{meta['total']}** encuestas ({meta['n_hogar']} hogar, {meta['n_no_aplica']} no aplica)."
+# --- ENCABEZADO VERTICAL (ÍCONO ARRIBA, TÍTULO ABAJO) ---
+st.markdown(
+    f"""
+    <div style="text-align: center; padding: 0.4rem 0 1.0rem 0;">
+        <div style="font-size: 2.8rem; line-height: 1.15;">⚙️</div>
+        <h1 style="margin: 0.25rem 0; font-size: 2.0rem;">POTATECH - Cortadora y Peladora de Papas</h1>
+        <p style="margin: 0; color: #666666; font-size: 0.95rem;">
+            Casa de la Calidad (QFD) | Segmento objetivo: <b>Negocios de alimentos (n = {meta['n_negocios']})</b>
+            de <b>{meta['total']}</b> encuestas ({meta['n_hogar']} hogar, {meta['n_no_aplica']} no aplica)
+        </p>
+    </div>
+    """,
+    unsafe_allow_html=True,
 )
 
+# --- INDICADORES PORCENTUALES / MÉTRICAS EN VERTICAL ---
 u_series = est_df["utilidad_num"].dropna()
 disp_pct = est_df["est_p7_disposicion_uso"].isin(
     ["Definitivamente la utilizaría", "Probablemente la utilizaría"]
 ).mean() * 100
+pct_negocios = (meta["n_negocios"] / max(meta["total"], 1)) * 100
+pct_precio_viable = est_df["est_p12_precio_max"].isin(
+    ["Menos de USD 200", "USD 200–399"]
+).mean() * 100
 
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Negocios encuestados", f"{meta['n_negocios']}", "10.0% de la muestra")
-c2.metric("Utilidad media (1–5)", f"{u_series.mean():.2f}", f"Mediana: {u_series.median():.1f}")
-c3.metric("Disposición favorable", f"{disp_pct:.1f}%", "Definitivamente / Probablemente")
-c4.metric("Rango precio viable", "≤ USD 399", "13/16 negocios (81.3%)")
+st.metric(
+    "Participación del segmento negocios",
+    f"{pct_negocios:.1f}%",
+    f"{meta['n_negocios']} de {meta['total']} respuestas totales",
+)
+st.metric(
+    "Disposición favorable de uso",
+    f"{disp_pct:.1f}%",
+    f"Utilidad media: {u_series.mean():.2f} / 5.00 (Mediana: {u_series.median():.1f})",
+)
+st.metric(
+    "Negocios con valor objetivo viable (≤ USD 399)",
+    f"{pct_precio_viable:.1f}%",
+    "En precio máximo aceptable (P12)",
+)
 
+st.markdown("---")
+
+# --- PESTAÑAS ---
 tab_est, tab_ques, tab_qfd, tab_tech = st.tabs([
     "1. Estadística (Negocios)",
     "2. Necesidades Jerarquizadas (QUÉS)",
@@ -262,32 +290,31 @@ tab_est, tab_ques, tab_qfd, tab_tech = st.tabs([
 ])
 
 with tab_est:
-    col_a, col_b = st.columns(2)
-    with col_a:
-        st.subheader("Volumen diario de papa (`P2`)")
-        order_p2 = ["Menos de 5 kg", "5–10 kg", "11–20 kg", "21–40 kg", "Más de 100 kg"]
-        colored_bar_chart(
-            est_df["est_p2_kg_dia"].value_counts().reindex(order_p2).dropna(),
-            xlabel="Número de negocios",
-        )
+    st.subheader("Volumen diario de papa (`P2`)")
+    order_p2 = ["Menos de 5 kg", "5–10 kg", "11–20 kg", "21–40 kg", "Más de 100 kg"]
+    colored_bar_chart(
+        est_df["est_p2_kg_dia"].value_counts().reindex(order_p2).dropna(),
+        ylabel="Número de negocios",
+        horizontal=False,
+    )
 
-        st.subheader("Precio máximo aceptable (`P12`)")
-        colored_bar_chart(
-            est_df["est_p12_precio_max"].value_counts(),
-            xlabel="Número de negocios",
-        )
+    st.subheader("Precio máximo aceptable (`P12`)")
+    colored_bar_chart(
+        est_df["est_p12_precio_max"].value_counts(),
+        ylabel="Número de negocios",
+        horizontal=False,
+    )
 
-    with col_b:
-        st.subheader("Factores decisivos de compra (`P9`)")
-        p9_vc = explode_multi(
-            est_df["est_p9_factores_decision"],
-            {"Era propietaria, actualmente no tengo el negocio": "Expropietario/a"},
-        )
-        colored_bar_chart(p9_vc, xlabel="Menciones")
+    st.subheader("Factores decisivos de compra (`P9`)")
+    p9_vc = explode_multi(
+        est_df["est_p9_factores_decision"],
+        {"Era propietaria, actualmente no tengo el negocio": "Expropietario/a"},
+    )
+    colored_bar_chart(p9_vc, ylabel="Menciones", horizontal=False)
 
-        st.subheader("Barreras para no adquirir (`P10`)")
-        p10_vc = explode_multi(est_df["est_p10_barreras_compra"])
-        colored_bar_chart(p10_vc, xlabel="Menciones")
+    st.subheader("Barreras para no adquirir (`P10`)")
+    p10_vc = explode_multi(est_df["est_p10_barreras_compra"])
+    colored_bar_chart(p10_vc, ylabel="Menciones", horizontal=False)
 
 q_df, comos_meta, rel_init, roof_df = build_qfd_inputs(est_df)
 
@@ -306,9 +333,12 @@ with tab_ques:
     edited_q["Peso Cliente (%)"] = (
         edited_q["Importancia (1-5)"] / edited_q["Importancia (1-5)"].sum() * 100.0
     ).round(1)
+
+    st.subheader("Peso relativo de cada necesidad del cliente (%)")
     colored_bar_chart(
         edited_q.set_index("Requisito del Cliente (QUÉ)")["Peso Cliente (%)"],
-        xlabel="Peso relativo del cliente (%)",
+        ylabel="Peso relativo (%)",
+        horizontal=False,
         suffix="%",
     )
 
@@ -360,9 +390,12 @@ with tab_tech:
     tech_out.insert(0, "Prioridad", tech_out.index + 1)
 
     st.dataframe(tech_out, width="stretch", hide_index=True)
+
+    st.subheader("Importancia técnica relativa de los requisitos (%)")
     colored_bar_chart(
         tech_out.set_index("Característica Técnica (CÓMO)")["Importancia Técnica (%)"],
-        xlabel="Importancia técnica relativa (%)",
+        ylabel="Importancia técnica (%)",
+        horizontal=False,
         suffix="%",
     )
 
