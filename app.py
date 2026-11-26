@@ -246,7 +246,7 @@ st.markdown(
     f"""
     <div style="text-align: center; padding: 0.4rem 0 1.0rem 0;">
         <div style="font-size: 2.8rem; line-height: 1.15;">⚙️</div>
-        <h1 style="margin: 0.25rem 0; font-size: 2.0rem;">POTATECH - Cortadora y Peladora de Papas</h1>
+        <h1 style="margin: 0.25rem 0; font-size: 2.0rem;">POTATECH - Peladora y Picadora de Papas</h1>
         <p style="margin: 0; color: #666666; font-size: 0.95rem;">
             Casa de la Calidad (QFD) | Segmento objetivo: <b>Negocios de alimentos (n = {meta['n_negocios']})</b>
             de <b>{meta['total']}</b> encuestas ({meta['n_hogar']} hogar, {meta['n_no_aplica']} no aplica)
