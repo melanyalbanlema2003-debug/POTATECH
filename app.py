@@ -255,14 +255,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 4 MÉTRICAS EN VERTICAL (IZQUIERDA) + VIDEO (DERECHA) ---
+# --- 4 MÉTRICAS EN VERTICAL (IZQUIERDA) + VIDEO REDUCIDO (DERECHA) ---
 u_series = est_df["utilidad_num"].dropna()
 disp_pct = est_df["est_p7_disposicion_uso"].isin(
     ["Definitivamente la utilizaría", "Probablemente la utilizaría"]
 ).mean() * 100
 pct_negocios = (meta["n_negocios"] / max(meta["total"], 1)) * 100
 
-col_metrics, col_video = st.columns([1, 1.35], gap="large")
+col_metrics, col_video = st.columns([1.65, 0.75], gap="medium")
 
 with col_metrics:
     st.metric(
@@ -287,14 +287,14 @@ with col_metrics:
     )
 
 with col_video:
-    st.subheader("Video demostrativo POTATECH")
+    st.caption("**Video demostrativo POTATECH**")
     video_path = Path(VIDEO_FILE)
     if video_path.exists():
-        st.video(str(video_path))
+        _, v_subcol, _ = st.columns([0.05, 0.65, 0.3])
+        with v_subcol:
+            st.video(str(video_path))
     else:
-        st.info(f"Coloca el archivo `{VIDEO_FILE}` en la misma carpeta que `app.py` para reproducirlo aquí.")
-
-st.markdown("---")
+        st.info(f"Coloca `{VIDEO_FILE}` en la carpeta del proyecto.")
 
 # --- PESTAÑAS ---
 tab_est, tab_ques, tab_qfd, tab_tech = st.tabs([
