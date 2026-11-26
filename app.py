@@ -256,14 +256,35 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 3 COLUMNAS: DATOS (IZQUIERDA) | LOGO (CENTRO) | VIDEO REDUCIDO (DERECHA) ---
+# --- ESTILOS COMPACTOS PARA EVITAR HUECOS VACÍOS ---
+st.markdown(
+    """
+    <style>
+        div[data-testid="stMetric"] {
+            padding: 0.35rem 0.6rem;
+            margin-bottom: 0.35rem;
+            border-radius: 8px;
+            background-color: rgba(128, 128, 128, 0.06);
+        }
+        div[data-testid="stMetric"] label {
+            font-size: 0.82rem;
+        }
+        div[data-testid="stMetric"] div[data-testid="stMetricValue"] {
+            font-size: 1.35rem;
+        }
+    </style>
+    """,
+    unsafe_allow_html=True,
+)
+
+# --- 3 COLUMNAS CENTRADAS: DATOS (IZQUIERDA) | LOGO (CENTRO) | VIDEO (DERECHA) ---
 u_series = est_df["utilidad_num"].dropna()
 disp_pct = est_df["est_p7_disposicion_uso"].isin(
     ["Definitivamente la utilizaría", "Probablemente la utilizaría"]
 ).mean() * 100
 pct_negocios = (meta["n_negocios"] / max(meta["total"], 1)) * 100
 
-col_metrics, col_logo, col_video = st.columns([1.0, 1.15, 0.85], gap="medium")
+col_metrics, col_logo, col_video = st.columns([1.05, 1.0, 0.95], gap="small", vertical_alignment="center")
 
 with col_metrics:
     st.metric(
@@ -290,21 +311,19 @@ with col_metrics:
 with col_logo:
     logo_path = Path(LOGO_FILE)
     if logo_path.exists():
-        st.image(str(logo_path), width="stretch")
+        _, l_subcol, _ = st.columns([0.1, 0.8, 0.1])
+        with l_subcol:
+            st.image(str(logo_path), width="stretch")
     else:
         st.info(f"Guarda tu logo como `{LOGO_FILE}` en la carpeta del proyecto para mostrarlo aquí.")
 
 with col_video:
-    st.caption("**Video demostrativo POTATECH**")
+    st.caption("**Video demostrativo POTATOTECH**")
     video_path = Path(VIDEO_FILE)
     if video_path.exists():
-        _, v_subcol, _ = st.columns([0.05, 0.7, 0.25])
-        with v_subcol:
-            st.video(str(video_path))
+        st.video(str(video_path))
     else:
         st.info(f"Coloca `{VIDEO_FILE}` en la carpeta del proyecto.")
-
-st.markdown("---")
 
 # --- PESTAÑAS ---
 tab_est, tab_ques, tab_qfd, tab_tech = st.tabs([
