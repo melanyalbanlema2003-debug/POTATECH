@@ -253,31 +253,35 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# --- 4 MÉTRICAS EN DISPOSICIÓN 2 Y 2 EN VERTICAL ---
+# --- 4 MÉTRICAS EN DISPOSICIÓN 2 Y 2 ---
 u_series = est_df["utilidad_num"].dropna()
 disp_pct = est_df["est_p7_disposicion_uso"].isin(
     ["Definitivamente la utilizaría", "Probablemente la utilizaría"]
 ).mean() * 100
 pct_negocios = (meta["n_negocios"] / max(meta["total"], 1)) * 100
 
-with st.container():
+fila1_col1, fila1_col2 = st.columns(2)
+with fila1_col1:
     st.metric(
         "Negocios encuestados",
         f"{meta['n_negocios']} ({pct_negocios:.1f}%)",
         f"De {meta['total']} respuestas totales",
     )
+with fila1_col2:
     st.metric(
         "Utilidad media (1–5)",
         f"{u_series.mean():.2f}",
         f"Mediana: {u_series.median():.1f}",
     )
 
-with st.container():
+fila2_col1, fila2_col2 = st.columns(2)
+with fila2_col1:
     st.metric(
         "Disposición favorable",
         f"{disp_pct:.1f}%",
         "Definitivamente / Probablemente",
     )
+with fila2_col2:
     st.metric(
         "Rango precio viable",
         "≤ USD 399",
