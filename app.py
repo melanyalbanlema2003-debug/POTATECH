@@ -182,7 +182,7 @@ def build_qfd_inputs(est_df: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame, 
         [
             ("C1", "Capacidad de procesamiento (kg/h)", "↑ Maximizar", "≥ 20–35 kg/h (lote 2–3 kg en ≤ 4 min)"),
             ("C2", "Porcentaje de merma en pelado y corte (%)", "↓ Minimizar", "≤ 10–12% de pérdida de masa"),
-            ("C3", "Costo de fabricación / precio objetivo (USD)", "↓ Minimizar", "≤ USD 200–399 precio objetivo"),
+            ("C3", "Costo de adaptacion de la maquina/Valor objetivo (USD)", "↓ Minimizar", "≤ USD 200–399 costo/valor objetivo"),
             ("C4", "Huella en planta y masa total (mm / kg)", "↓ Minimizar", "≤ 450 × 350 × 550 mm; masa ≤ 22 kg"),
             ("C5", "Tolerancia dimensional de corte (mm)", "↓ Minimizar", "Bastón 9 × 9 mm (± 1.0 mm)"),
             ("C6", "Potencia eléctrica instalada (W)", "↓ Minimizar", "370–550 W (0.5–0.75 HP, 110 V)"),
